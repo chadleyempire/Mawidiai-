@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mawidy Music System</title>
+</head>
+
+<body style="font-family:Arial;text-align:center;background:#111;color:white;">
+
+  <h1>🎵 Mawidy Music System</h1>
+
+  <input id="title" placeholder="Song title"><br><br>
+  <input type="file" id="file"><br><br>
+
+  <button onclick="uploadSong()">⬆️ Upload</button>
+
+  <h2>📀 Songs</h2>
+  <div id="list"></div>
+
+<script>
+function getSongs(){
+  return JSON.parse(localStorage.getItem("songs") || "[]");
+}
+
+function saveSongs(songs){
+  localStorage.setItem("songs", JSON.stringify(songs));
+}
+
+function uploadSong(){
+  let title = document.getElementById("title").value;
+  let file = document.getElementById("file").files[0];
+
+  if(!title || !file){
+    alert("Jaza title na chagua file");
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e){
+    let songs = getSongs();
+
+    songs.push({
+      title: title,
+      data: e.target.result
+    });
+
+    saveSongs(songs);
+    loadSongs();
+
+    alert("Uploaded 🎵");
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function loadSongs(){
+  let songs = getSongs();
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  songs.forEach(s => {
+    let div = document.createElement("div");
+
+    div.innerHTML = `
+      🎵 ${s.title}<br>
+      <audio controls src="${s.data}"></audio><br>
+      <a download="${s.title}.mp3" href="${s.data}">
+        ⬇️ Download
+      </a>
+      <br><br>
+    `;
+
+    let shareBtn = document.createElement("button");
+    shareBtn.innerHTML = "📣 Share";
+    shareBtn.onclick = function () {
+      let msg = "🎵 Check this song: " + s.title;
+      let url = window.location.href;
+      window.open("https://wa.me/?text=" + encodeURIComponent(msg + " " + url));
+    };
+
+    div.appendChild(shareBtn);
+    list.appendChild(div);
+  });
+}
+
+window.onload = loadSongs;
+</script>
+
+</body>
+</html>
