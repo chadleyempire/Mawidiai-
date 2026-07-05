@@ -5,7 +5,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "🤖 Mawidy AI iko online!"
+    return "<h1>🤖 Mawidy AI iko online!</h1>"
+
+@app.route("/test")
+def test():
+    return "OK WORKING"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
