@@ -1,43 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mawidy AI</title>
-    <style>
-        body{
-            font-family:Arial,sans-serif;
-            background:#f5f9ff;
-            text-align:center;
-            margin:0;
-            padding:40px;
-        }
-        h1{
-            color:#0066cc;
-        }
-        .btn{
-            display:block;
-            width:250px;
-            margin:15px auto;
-            padding:15px;
-            background:#0066cc;
-            color:white;
-            text-decoration:none;
-            border-radius:10px;
-            font-size:18px;
-        }
-        .btn:hover{
-            background:#004d99;
-        }
-    </style>
-</head>
-<body>
+from flask import Flask, render_template, request
+import os
 
-<h1>🤖 Mawidy AI</h1>
-<p>Welcome to Mawidy AI Music Promotion Platform</p>
+app = Flask(__name__)
 
-<a class="btn" href="/upload">🎵 Upload Song</a>
-<a class="btn" href="#">📢 Create Promotion</a>
-<a class="btn" href="#">💰 Buy Coins</a>
-<a class="btn" href="#">👤 Profile</a>
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-</body>
-</html>
+coins = 100
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    global coins
+
+    if request.method == "POST":
+        if coins <= 0:
+            return "Huna coins za upload"
+
+        file = request.files.get("song")
+        if not file:
+            return "Hakuna file iliyochaguliwa"
+
+        file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+
+        coins -= 10
+        return f"Upload successful 🎉 Coins zilizosalia: {coins}"
+
+    return render_template("upload.html")
+
+
+@app.route("/buy-coins")
+def buy_coins():
+    global coins
+    coins += 50
+    return f"Umenunua coins 🎉 Sasa una {coins}"
+
+
+@app.route("/coins")
+def check_coins():
+    return f"Wewe una coins: {coins}"
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
