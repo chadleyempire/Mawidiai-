@@ -6,6 +6,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Simple coins system
 coins = 100
 
 
@@ -19,17 +20,17 @@ def upload():
     global coins
 
     if request.method == "POST":
-        if coins <= 0:
-            return "Huna coins za upload"
+        if coins < 10:
+            return "❌ Huna coins za kutosha kufanya upload"
 
         file = request.files.get("song")
-        if not file:
-            return "Hakuna file iliyochaguliwa"
 
-        file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+        if file:
+            file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+            coins -= 10
+            return f"✅ Upload successful! Coins zilizobaki: {coins}"
 
-        coins -= 10
-        return f"Upload successful 🎉 Coins zilizosalia: {coins}"
+        return "Hakuna file iliyochaguliwa"
 
     return render_template("upload.html")
 
@@ -38,12 +39,12 @@ def upload():
 def buy_coins():
     global coins
     coins += 50
-    return f"Umenunua coins 🎉 Sasa una {coins}"
+    return f"💰 Coins zimeongezwa! Sasa una coins {coins}"
 
 
 @app.route("/coins")
-def check_coins():
-    return f"Wewe una coins: {coins}"
+def show_coins():
+    return f"Una coins {coins}"
 
 
 if __name__ == "__main__":
