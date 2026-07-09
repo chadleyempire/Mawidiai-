@@ -8,6 +8,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 coins = 100
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -18,6 +19,7 @@ def upload():
     global coins
 
     if request.method == "POST":
+
         if coins < 10:
             return "❌ Huna coins za kutosha kufanya upload"
 
@@ -42,7 +44,12 @@ def buy_coins():
 
 @app.route("/coins")
 def show_coins():
-    return f"Una coins {coins}"
+    return f"💰 Una coins {coins}"
+
+
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
 
 
 if __name__ == "__main__":
